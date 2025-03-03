@@ -25,7 +25,7 @@ public class Milestone {
     private LocalDate targetDate;
 
     private String currentStatus;
-    private Long currentPhaseID;
+    private String currentPhase;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -101,12 +101,12 @@ public class Milestone {
         this.currentStatus = currentStatus;
     }
 
-    public Long getCurrentPhaseID() {
-        return currentPhaseID;
+    public String getCurrentPhase() {
+        return currentPhase;
     }
 
-    public void setCurrentPhaseID(Long currentPhaseID) {
-        this.currentPhaseID = currentPhaseID;
+    public void setCurrentPhase(String currentPhase) {
+        this.currentPhase = currentPhase;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -123,5 +123,10 @@ public class Milestone {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }
