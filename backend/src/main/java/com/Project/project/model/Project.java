@@ -12,11 +12,11 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment
     private Long projectID;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String clientName;
 
     @Column(unique = true, nullable = false)
-    private String programName;
+    private String projectName;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -69,12 +69,12 @@ public class Project {
         this.clientName = clientName;
     }
 
-    public String getProgramName() {
-        return programName;
+    public String getProjectName() {
+        return projectName;
     }
 
-    public void setProgramName(String programName) {
-        this.programName = programName;
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
     public String getDescription() {

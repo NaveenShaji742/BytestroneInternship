@@ -43,7 +43,7 @@ public class ProjectController {
         return projectRepository.findById(id)
                 .map(project -> {
                     project.setClientName(newProject.getClientName());
-                    project.setProgramName(newProject.getProgramName());
+                    project.setProjectName(newProject.getProjectName());
                     project.setDescription(newProject.getDescription());
                     project.setEngineeringManager(newProject.getEngineeringManager());
                     project.setStartDate(newProject.getStartDate());

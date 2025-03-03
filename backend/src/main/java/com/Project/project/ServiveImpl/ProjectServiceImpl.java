@@ -1,8 +1,9 @@
-package com.Project.project.service;
+package com.Project.project.ServiveImpl;
 
 import com.Project.project.exception.ProjectNotFoundException;
 import com.Project.project.model.Project;
 import com.Project.project.repository.ProjectRepository;
+import com.Project.project.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,7 @@ public class ProjectServiceImpl implements ProjectService {
         return projectRepository.findById(projectID)
                 .map(project -> {
                     project.setClientName(newProject.getClientName());   // Updated field names
-                    project.setProgramName(newProject.getProgramName());
+                    project.setProjectName(newProject.getProjectName());
                     project.setDescription(newProject.getDescription());
                     project.setEngineeringManager(newProject.getEngineeringManager());
                     project.setScope(newProject.getScope());
