@@ -35,7 +35,7 @@ export default function ViewUser() {
             </div>
             <div className="card-body">
               <p className="card-text"><strong>Client Name:</strong> {project.clientName}</p>
-              <p className="card-text"><strong>Program Name:</strong> {project.programName}</p>
+              <p className="card-text"><strong>projectName:</strong> {project.projectName}</p>
               <p className="card-text"><strong>Start Date:</strong> {project.startDate}</p>
               <p className="card-text"><strong>End Date:</strong> {project.endDate}</p>
               <p className="card-text"><strong>Budget:</strong> {project.budget}</p>

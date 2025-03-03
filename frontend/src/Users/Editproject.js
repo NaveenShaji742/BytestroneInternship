@@ -8,7 +8,7 @@ export default function EditProject() {
 
   const [project, setProject] = useState({
     clientName: "",
-    programName: "",
+    projectName: "",
     description: "",
     engineeringManager: "",
     startDate: "",
@@ -50,7 +50,7 @@ export default function EditProject() {
 
     if (
       !project.clientName ||
-      !project.programName ||
+      !project.projectName ||
       !project.description ||
       !project.engineeringManager ||
       !project.startDate ||
@@ -90,8 +90,8 @@ export default function EditProject() {
               <input type="text" className="form-control" name="clientName" value={project.clientName} onChange={onInputChange} />
             </div>
             <div className="mb-3">
-              <label htmlFor="programName" className="form-label">Program Name</label>
-              <input type="text" className="form-control" name="programName" value={project.programName} onChange={onInputChange} />
+              <label htmlFor="projectName" className="form-label">projectName</label>
+              <input type="text" className="form-control" name="projectName" value={project.programName} onChange={onInputChange} />
             </div>
             <div className="mb-3">
               <label htmlFor="description" className="form-label">Description</label>

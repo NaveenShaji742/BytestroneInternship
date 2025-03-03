@@ -1,5 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+
+
 import { useNavigate } from 'react-router-dom';
 
 export default function AddProject() {
@@ -7,7 +9,7 @@ export default function AddProject() {
 
   const [project, setProject] = useState({
     clientName: "",
-    programName: "",
+    projectName: "",
     description: "",
     engineeringManager: "",
     startDate: "",
@@ -36,7 +38,7 @@ export default function AddProject() {
     // Check if all fields are filled
     if (
       !project.clientName ||
-      !project.programName ||
+      !project.projectName ||
       !project.description ||
       !project.engineeringManager ||
       !project.startDate ||
@@ -85,15 +87,15 @@ export default function AddProject() {
               />
             </div>
             <div className="mb-3">
-              <label htmlFor="programName" className="form-label">
-                Program Name
+              <label htmlFor="projectName" className="form-label">
+                Project Name
               </label>
               <input
                 type="text"
                 className="form-control"
-                placeholder="Enter program name"
-                name="programName"
-                value={project.programName}
+                placeholder="Enter project name"
+                name="projectName"
+                value={project.projectName}
                 onChange={onInputChange}
               />
             </div>
