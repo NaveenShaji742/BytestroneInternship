@@ -1,0 +1,80 @@
+/* Sidebar Styling */
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background: #823d76; /* Lilac */
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sidebar Links */
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 15px 0;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+  color: rgb(233, 218, 218);
+  font-size: 18px;
+  display: block;
+  padding: 10px;
+  transition: 0.3s;
+  border-radius: 5px;
+}
+
+.sidebar ul li a:hover {
+  background: rgba(232, 79, 79, 0.2);
+}
+
+/* Add Project Button */
+.add-project-btn {
+  background: rgb(179, 98, 150);
+  color: rgb(255, 255, 255);
+  text-align: center;
+  padding: 10px;
+  border-radius: 5px;
+  display: block;
+  font-weight: bold;
+  border: none;
+}
+
+.add-project-btn:hover {
+  background: #ddd;
+}
+
+/* Ensure the main content does not overlap */
+.main-content {
+  margin-left: 260px;
+  padding: 20px;
+}
+
+/* Responsive Sidebar */
+@media (max-width: 768px) {
+  .sidebar {
+      width: 200px;
+  }
+  .main-content {
+      margin-left: 210px;
+  }
+}
+
+@media (max-width: 576px) {
+  .sidebar {
+      width: 100%;
+      height: auto;
+      position: relative;
+  }
+  .main-content {
+      margin-left: 0;
+  }
+}
