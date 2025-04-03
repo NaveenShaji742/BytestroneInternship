@@ -8,11 +8,11 @@
 		<version>3.4.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.Project</groupId>
-	<artifactId>project</artifactId>
+	<groupId>com.usercrud</groupId>
+	<artifactId>crud</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>project</name>
-	<description>crud operation</description>
+	<name>crud</name>
+	<description>userpanel</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -49,12 +49,7 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+	</dependencies>
 
 	<build>
 		<plugins>
