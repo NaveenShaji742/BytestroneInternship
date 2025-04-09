@@ -21,11 +21,12 @@ export default function Navbar(currentProjectID) {
             <li className="nav-item">
               <Link className="nav-link" to="/AddProject">📊 Project</Link>
             </li>
-            <li className="nav-item">
-              <Link className="nav-link" to={`/projects/${currentProjectID}/add-milestone`}>📊 Milestone </Link>
-            </li>
+      
             <li className="nav-item">
               <Link className="nav-link" to="/phases">📊 Phase</Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to={`/projects/${currentProjectID}/add-milestone`}>📊 Milestone </Link>
             </li>
             
             <li className="nav-item">
