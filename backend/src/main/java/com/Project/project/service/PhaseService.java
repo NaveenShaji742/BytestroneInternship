@@ -1,4 +1,3 @@
-
 package com.Project.project.service;
 
 import com.Project.project.model.Phase;
@@ -11,9 +10,11 @@ import java.util.List;
 @Service
 public class PhaseService {
     private final PhaseRepository phaseRepository;
+    private final AuditTrailService auditTrailService;
 
-    public PhaseService(PhaseRepository phaseRepository) {
+    public PhaseService(PhaseRepository phaseRepository, AuditTrailService auditTrailService) {
         this.phaseRepository = phaseRepository;
+        this.auditTrailService = auditTrailService;
     }
 
     public List<Phase> getAllPhases() {
@@ -21,22 +22,25 @@ public class PhaseService {
     }
 
     public Phase addPhase(Phase phase) {
-        if (phaseRepository.findByName(phase.getName()).isPresent()) {
+        if (phaseRepository.findByPhaseName(phase.getPhaseName()).isPresent()) {
             throw new IllegalArgumentException("Phase name must be unique");
         }
-        return phaseRepository.save(phase);
+        Phase saved = phaseRepository.save(phase);
+        auditTrailService.log("Phase", "ADD", "admin");
+        return saved;
     }
 
     public Phase updatePhase(Long id, Phase updatedPhase) {
-        return phaseRepository.findById(id).map(phase -> {
-            if (!phase.getName().equals(updatedPhase.getName()) &&
-                    phaseRepository.findByName(updatedPhase.getName()).isPresent()) {
+        return phaseRepository.findById(id).map(existing -> {
+            if (!existing.getPhaseName().equals(updatedPhase.getPhaseName()) &&
+                    phaseRepository.findByPhaseName(updatedPhase.getPhaseName()).isPresent()) {
                 throw new IllegalArgumentException("Phase name must be unique");
             }
-            phase.setName(updatedPhase.getName());
-            phase.setDescription(updatedPhase.getDescription());
-            phase.setStatus(updatedPhase.getStatus());
-            return phaseRepository.save(phase);
+            existing.setPhaseName(updatedPhase.getPhaseName());
+            existing.setDescription(updatedPhase.getDescription());
+            existing.setStatus(updatedPhase.getStatus());
+            auditTrailService.log("Phase", "EDIT", "admin");
+            return phaseRepository.save(existing);
         }).orElseThrow(() -> new PhaseNotFoundException(id));
     }
 
@@ -45,5 +49,6 @@ public class PhaseService {
             throw new PhaseNotFoundException(id);
         }
         phaseRepository.deleteById(id);
+        auditTrailService.log("Phase", "DELETE", "admin");
     }
 }

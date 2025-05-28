@@ -14,4 +14,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     // Sort projects by created date in ascending order
     List<Project> findAllByOrderByCreatedAtAsc();
+
+    List<Project> findByStatus(String active);
+
 }

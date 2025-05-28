@@ -11,7 +11,7 @@ public class Phase {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name;
+    private String phaseName;
 
     private String description;
 
@@ -26,9 +26,9 @@ public class Phase {
     public Phase() {}
 
     // Parameterized Constructor
-    public Phase(Long id, String name, String description, Status status) {
+    public Phase(Long id, String phaseName, String description, Status status) {
         this.id = id;
-        this.name = name;
+        this.phaseName = phaseName;
         this.description = description;
         this.status = status;
     }
@@ -42,12 +42,13 @@ public class Phase {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+
+    public String getPhaseName() {
+        return phaseName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPhaseName(String phaseName) {
+        this.phaseName = phaseName;
     }
 
     public String getDescription() {
@@ -71,7 +72,7 @@ public class Phase {
     public String toString() {
         return "Phase{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name='" + phaseName + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 '}';

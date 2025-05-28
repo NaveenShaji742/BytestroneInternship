@@ -1,4 +1,3 @@
-
 package com.Project.project.model;
 
 import jakarta.persistence.*;
@@ -14,22 +13,28 @@ public class ContractType {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(unique = true)
-    private String contractCode;
-
+    private String code;
     private String description;
 
-    // Default Constructor
     public ContractType() {}
 
-    // Parameterized Constructor
-    public ContractType(String name, String contractCode, String description) {
+    public ContractType(Long id, String name, String code, String description) {
+        this.id = id;
         this.name = name;
-        this.contractCode = contractCode;
+        this.code = code;
         this.description = description;
     }
 
     // Getters and Setters
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public Long getId() {
         return id;
     }
@@ -46,20 +51,11 @@ public class ContractType {
         this.name = name;
     }
 
-    public String getContractCode() {
-        return contractCode;
+    public String getCode() {
+        return code;
     }
 
-    public void setContractCode(String contractCode) {
-        this.contractCode = contractCode;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setCode(String code) {
+        this.code = code;
     }
 }
-

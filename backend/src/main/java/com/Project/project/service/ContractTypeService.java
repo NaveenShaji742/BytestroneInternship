@@ -1,8 +1,7 @@
-
 package com.Project.project.service;
 
-import com.Project.project.model.ContractType;
 import com.Project.project.exception.ContractTypeNotFoundException;
+import com.Project.project.model.ContractType;
 import com.Project.project.repository.ContractTypeRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,39 +10,45 @@ import java.util.List;
 @Service
 public class ContractTypeService {
     private final ContractTypeRepository contractTypeRepository;
+    private final AuditTrailService auditTrailService;
 
-    public ContractTypeService(ContractTypeRepository contractTypeRepository) {
+    public ContractTypeService(ContractTypeRepository contractTypeRepository, AuditTrailService auditTrailService) {
         this.contractTypeRepository = contractTypeRepository;
+        this.auditTrailService = auditTrailService;
     }
 
-    public List<ContractType> getAllContractTypes() {
+    public List<ContractType> getAll() {
         return contractTypeRepository.findAll();
     }
 
-    public ContractType addContractType(ContractType contractType) {
+    public ContractType add(ContractType contractType) {
         if (contractTypeRepository.findByName(contractType.getName()).isPresent()) {
-            throw new IllegalArgumentException("Contract Type name must be unique");
+            throw new IllegalArgumentException("Contract type name must be unique");
         }
-        return contractTypeRepository.save(contractType);
+        ContractType saved = contractTypeRepository.save(contractType);
+        auditTrailService.log("ContractType", "ADD", "admin");
+        return saved;
     }
 
-    public ContractType updateContractType(Long id, ContractType updatedContractType) {
-        return contractTypeRepository.findById(id).map(contractType -> {
-            if (!contractType.getName().equals(updatedContractType.getName()) &&
-                    contractTypeRepository.findByName(updatedContractType.getName()).isPresent()) {
-                throw new IllegalArgumentException("Contract Type name must be unique");
+    public ContractType update(Long id, ContractType updated) {
+        return contractTypeRepository.findById(id).map(existing -> {
+            if (!existing.getName().equals(updated.getName()) &&
+                    contractTypeRepository.findByName(updated.getName()).isPresent()) {
+                throw new IllegalArgumentException("Contract type name must be unique");
             }
-            contractType.setName(updatedContractType.getName());
-            contractType.setContractCode(updatedContractType.getContractCode());
-            contractType.setDescription(updatedContractType.getDescription());
-            return contractTypeRepository.save(contractType);
+            existing.setName(updated.getName());
+            existing.setCode(updated.getCode());
+            existing.setDescription(updated.getDescription());
+            auditTrailService.log("ContractType", "EDIT", "admin");
+            return contractTypeRepository.save(existing);
         }).orElseThrow(() -> new ContractTypeNotFoundException(id));
     }
 
-    public void deleteContractType(Long id) {
+    public void delete(Long id) {
         if (!contractTypeRepository.existsById(id)) {
             throw new ContractTypeNotFoundException(id);
         }
         contractTypeRepository.deleteById(id);
+        auditTrailService.log("ContractType", "DELETE", "admin");
     }
 }

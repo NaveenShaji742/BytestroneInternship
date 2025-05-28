@@ -3,39 +3,54 @@ package com.Project.project.controller;
 
 import com.Project.project.model.ContractType;
 import com.Project.project.service.ContractTypeService;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/contract-types")
-@CrossOrigin("*")
+@RequestMapping("/api/contracts")
+@CrossOrigin(origins = "*")
 public class ContractTypeController {
-    private final ContractTypeService contractTypeService;
 
-    public ContractTypeController(ContractTypeService contractTypeService) {
-        this.contractTypeService = contractTypeService;
-    }
+    @Autowired
+    private ContractTypeService service;
 
     @GetMapping
-    public List<ContractType> getAllContractTypes() {
-        return contractTypeService.getAllContractTypes();
+    public List<ContractType> getAll() {
+        return service.getAll();
     }
 
     @PostMapping
-    public ContractType addContractType(@RequestBody ContractType contractType) {
-        return contractTypeService.addContractType(contractType);
+    public ResponseEntity<?> create(@RequestBody ContractType contractType) {
+        try {
+            return ResponseEntity.ok(service.add(contractType));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ContractType updateContractType(@PathVariable Long id, @RequestBody ContractType contractType) {
-        return contractTypeService.updateContractType(id, contractType);
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ContractType updated) {
+        try {
+            return ResponseEntity.ok(service.update(id, updated));
+        } catch (IllegalArgumentException | EntityNotFoundException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    public String deleteContractType(@PathVariable Long id) {
-        contractTypeService.deleteContractType(id);
-        return "Contract Type deleted successfully!";
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        try {
+            service.delete(id);
+            return ResponseEntity.ok("Deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Cannot delete due to dependencies");
+        }
     }
 }
+
 

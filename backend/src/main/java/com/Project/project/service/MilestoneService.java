@@ -6,6 +6,8 @@ import com.Project.project.repository.MilestoneRepository;
 import com.Project.project.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +16,6 @@ public class MilestoneService {
 
     @Autowired
     private MilestoneRepository milestoneRepository;
-
     @Autowired
     private ProjectRepository projectRepository;
 
@@ -28,9 +29,18 @@ public class MilestoneService {
         throw new RuntimeException("Project not found with ID: " + projectID);
     }
 
+    public List<Milestone> getAllMilestones() {
+        List<Project> projectList = projectRepository.findByStatus("ACTIVE");
+        List<Milestone> milestoneList = new ArrayList<>();
+        for (Project project : projectList) {
+            List<Milestone> milestoneByProject = milestoneRepository.findByProject(project);
+            milestoneList.addAll(milestoneByProject);
+        }
+        return milestoneList;
+    }
+
     // Get all milestones for a project
-    public List<Milestone> getMilestonesByProject(Long projectID) {
-        Optional<Project> projectOptional = projectRepository.findById(projectID);
+    public List<Milestone> getMilestonesByProject(Long projectID) {Optional<Project> projectOptional = projectRepository.findById(projectID);
         if (projectOptional.isPresent()) {
             return milestoneRepository.findByProject(projectOptional.get());
         }

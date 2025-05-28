@@ -78,9 +78,15 @@ public class MilestoneController {
         return milestoneService.getMilestoneById(milestoneID);
     }
 
+
     @GetMapping("/project/{projectId}")
     public List<Milestone> getMilestoneByProjectId(@PathVariable Long projectId) {
         return milestoneService.getMilestonesByProject(projectId);
+    }
+
+    @GetMapping("/project")
+    public List<Milestone> getAllMilestones() {
+        return milestoneService.getAllMilestones();
     }
 
     // Update a milestone

@@ -1,5 +1,6 @@
 package com.Project.project.model;
 
+import com.Project.project.dto.ProjectDTO;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,37 +27,46 @@ public class Project {
     private LocalDate startDate;
     private LocalDate endDate;
     private BigDecimal budget;
-
+    private String status;
     @Column(columnDefinition = "TEXT")
     private String scope;
 
-    private String contractTypeName;
+    @ManyToOne (cascade = CascadeType.ALL)
+    @JoinColumn(name = "contract_id")
+    private ContractType contractTypeName;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne (cascade = CascadeType.ALL)
+    @JoinColumn(name = "phase_id")
     private Phase phaseName;
 
     public Throwable getId() {
         return null;
     }
 
-    // Enum for dropdown values
-    public enum Phase {
-        INITIAL_PHASE,
-        DEVELOPING,
-        TESTING,
-        DEPLOYING
-    }
-
     // Constructors
-    public Project() {
+    public Project(){
+        super();
+    }
+    public Project(ProjectDTO newProject) {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+//        this.phaseName=newProject.getPhaseName();
+        this.description = newProject.getDescription();
+        this.budget = newProject.getBudget();
+        this.clientName = newProject.getClientName();
+        this.endDate = newProject.getEndDate();
+        this.engineeringManager = newProject.getEngineeringManager();
+        this.projectName = newProject.getProjectName();
+        this.scope = newProject.getScope();
+        this.startDate = newProject.getStartDate();
     }
 
+
     // Getters and Setters
+
     public Long getProjectID() {
         return projectID;
     }
@@ -129,11 +139,11 @@ public class Project {
         this.scope = scope;
     }
 
-    public String getContractTypeName() {
+    public ContractType getContractTypeName() {
         return contractTypeName;
     }
 
-    public void setContractTypeName(String contractTypeName) {
+    public void setContractTypeName(ContractType contractTypeName) {
         this.contractTypeName = contractTypeName;
     }
 
@@ -160,4 +170,9 @@ public class Project {
     public void setPhaseName(Phase phaseName) {
         this.phaseName = phaseName;
     }
+
+    public String getStatus() { return status;}
+
+    public void setStatus(String status) {this.status = status;}
+
 }

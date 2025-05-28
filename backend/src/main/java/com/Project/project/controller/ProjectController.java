@@ -1,15 +1,21 @@
 package com.Project.project.controller;
 
+import com.Project.project.dto.ProjectDTO;
 import com.Project.project.exception.ProjectNotFoundException;
 import com.Project.project.model.Project;
+import com.Project.project.repository.ContractTypeRepository;
+import com.Project.project.repository.PhaseRepository;
 import com.Project.project.repository.ProjectRepository;
 import com.Project.project.repository.MilestoneRepository;
+import com.Project.project.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,17 +27,26 @@ public class ProjectController {
 
     @Autowired
     private ProjectRepository projectRepository;
+    @Autowired
+    private PhaseRepository phaseRepo;
+
+    @Autowired
+    private ContractTypeRepository contractTypeRepo;
 
     @Autowired
     private MilestoneRepository milestoneRepository; // Inject MilestoneRepository
 
     // Create a new project
     @PostMapping("/project")
-    public ResponseEntity<Project> newProject(@RequestBody Project newProject) {
+    public ResponseEntity<Project> newProject(@RequestBody ProjectDTO newProject) {
         try {
-            newProject.setCreatedAt(LocalDateTime.now());
-            newProject.setUpdatedAt(LocalDateTime.now());
-            Project savedProject = projectRepository.save(newProject);
+            Project project = new Project(newProject);
+            project.setCreatedAt(LocalDateTime.now());
+            project.setUpdatedAt(LocalDateTime.now());
+            project.setStatus("ACTIVE");
+            project.setContractTypeName(contractTypeRepo.findByName(newProject.getContractTypeName()).get());
+            project.setPhaseName(phaseRepo.findByPhaseName(newProject.getPhaseName()).get());
+            Project savedProject = projectRepository.save(project);
             logger.info("Created new project with ID: {}", savedProject.getId());
             return ResponseEntity.ok(savedProject);
         } catch (Exception e) {
@@ -44,7 +59,7 @@ public class ProjectController {
     @GetMapping("/project")
     public ResponseEntity<List<Project>> getAllProjects() {
         try {
-            List<Project> projects = projectRepository.findAll();
+            List<Project> projects = projectRepository.findByStatus("ACTIVE");
             return ResponseEntity.ok(projects);
         } catch (Exception e) {
             logger.error("Failed to fetch projects: {}", e.getMessage());
@@ -70,7 +85,7 @@ public class ProjectController {
 
     // Update an existing project
     @PutMapping("/project/{id}")
-    public ResponseEntity<Project> updateProject(@RequestBody Project newProject, @PathVariable Long id) {
+    public ResponseEntity<Project> updateProject(@RequestBody ProjectDTO newProject, @PathVariable Long id) {
         try {
             Project updatedProject = projectRepository.findById(id)
                     .map(project -> {
@@ -82,8 +97,8 @@ public class ProjectController {
                         project.setEndDate(newProject.getEndDate());
                         project.setBudget(newProject.getBudget());
                         project.setScope(newProject.getScope());
-                        project.setContractTypeName(newProject.getContractTypeName());
-                        project.setPhaseName(newProject.getPhaseName());
+                        project.setContractTypeName(contractTypeRepo.findByName(newProject.getContractTypeName()).get());
+                        project.setPhaseName(phaseRepo.findByPhaseName(newProject.getPhaseName()).get());
                         project.setUpdatedAt(LocalDateTime.now());
                         return projectRepository.save(project);
                     }).orElseThrow(() -> new ProjectNotFoundException(id));
@@ -110,7 +125,10 @@ public class ProjectController {
             milestoneRepository.deleteByProjectId(id);
 
             // Delete the project
-            projectRepository.deleteById(id);
+            Optional<Project> byId = projectRepository.findById(id);
+            Project project = byId.get();
+            project.setStatus("INACTIVE");
+            projectRepository.save(project);
             logger.info("Deleted project with ID: {}", id);
             return ResponseEntity.ok("Project with ID " + id + " has been deleted successfully.");
         } catch (ProjectNotFoundException e) {

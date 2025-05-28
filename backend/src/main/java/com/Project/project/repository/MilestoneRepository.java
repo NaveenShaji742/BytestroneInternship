@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface MilestoneRepository extends JpaRepository<Milestone, Long> {
     List<Milestone> findByProject(Project projectID); // Find milestones by project ID
+    //findAllBy
 
     @Modifying
     @Transactional
