@@ -25,7 +25,11 @@ public class Milestone {
     private LocalDate targetDate;
 
     private String currentStatus;
-    private String currentPhase;
+
+    @ManyToOne
+    @JoinColumn(name = "current_phase", nullable = false)
+
+    private Phase currentPhase;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -101,11 +105,11 @@ public class Milestone {
         this.currentStatus = currentStatus;
     }
 
-    public String getCurrentPhase() {
+    public Phase getCurrentPhase() {
         return currentPhase;
     }
 
-    public void setCurrentPhase(String currentPhase) {
+    public void setCurrentPhase(Phase currentPhase) {
         this.currentPhase = currentPhase;
     }
 
@@ -128,5 +132,22 @@ public class Milestone {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    @Override
+    public String toString() {
+        return "Milestone{" +
+                "milestoneID=" + milestoneID +
+                ", project=" + project +
+                ", soWID=" + soWID +
+                ", taskID=" + taskID +
+                ", featureDescription='" + featureDescription + '\'' +
+                ", startDate=" + startDate +
+                ", targetDate=" + targetDate +
+                ", currentStatus='" + currentStatus + '\'' +
+                ", currentPhase=" + currentPhase +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

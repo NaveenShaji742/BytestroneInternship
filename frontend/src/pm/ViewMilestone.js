@@ -1,33 +1,42 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useRef } from 'react';
+import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
 
-export default function ViewMilestones() {
+const ViewMilestones = () => {
   const { projectID } = useParams();
-  const navigate = useNavigate();
   const [milestones, setMilestones] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+  const avatar = '/images/avatar.png';
+  const managerName = localStorage.getItem('username') || 'Project Manager';
 
   useEffect(() => {
-    // console.log(projectID);
-    // if (!projectID) {
-    //     alert("hi");
-    //   setError("Invalid project ID");
-    //   setLoading(false);
-    //   return;
-    // }
     loadMilestones();
   }, [projectID]);
 
   const loadMilestones = async () => {
     try {
+      // Fixed API endpoint to include projectID
       const result = await axios.get(`http://localhost:8080/milestones/project`);
       setMilestones(result.data || []);
     } catch (error) {
-      setError("Failed to load milestones. Please try again later.");
+      console.error("Error fetching milestones:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (milestoneID) => {
+    if (window.confirm("Are you sure you want to delete this milestone?")) {
+      try {
+        await axios.delete(`http://localhost:8080/milestones/delete/${milestoneID}`);
+        setMilestones(milestones.filter((m) => m.milestoneID !== milestoneID));
+      } catch (error) {
+        alert("Failed to delete milestone. Please try again.");
+      }
     }
   };
 
@@ -35,126 +44,117 @@ export default function ViewMilestones() {
     navigate(`/edit-milestone/${milestoneID}`);
   };
 
-  const handleDelete = async (milestoneID) => {
-    console.log("Deleting milestone with ID:", milestoneID);
-    if (window.confirm("Are you sure you want to delete this milestone?")) {
-      try {
-        await axios.delete(`http://localhost:8080/milestones/delete/${milestoneID}`);
-        console.log("Milestone deleted successfully");
-        setMilestones(milestones.filter((m) => m.milestoneID !== milestoneID));
-      } catch (error) {
-        console.error("Error deleting milestone:", error);
-        alert("Failed to delete milestone. Please try again.");
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/');
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
       }
-    }
-  };
-
-  const styles = {
-    container: {
-      maxWidth: "900px",
-      margin: "auto",
-      padding: "20px",
-      background: "#dedcdb",
-      borderRadius: "10px",
-      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-      fontFamily: "Arial, sans-serif",
-    },
-    title: {
-      textAlign: "center",
-      fontSize: "24px",
-      fontWeight: "bold",
-      marginBottom: "20px",
-      color: "#2c3e50",
-    },
-    message: {
-      textAlign: "center",
-      fontSize: "18px",
-      color: "#555",
-      marginTop: "20px",
-    },
-    listContainer: {
-      display: "flex",
-      flexWrap: "wrap",
-      justifyContent: "center",
-      gap: "20px",
-    },
-    card: {
-      width: "300px",
-      border: "1px solid #555555",
-      borderRadius: "10px",
-      padding: "15px",
-      background: "#823d76",
-      color: "#efeaea",
-      boxShadow: "0px 4px 8px rgba(155, 86, 86, 0.1)",
-      transition: "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
-    },
-    cardTitle: {
-      fontSize: "18px",
-      fontWeight: "bold",
-      marginBottom: "10px",
-      color: "#efeaea",
-    },
-    paragraph: {
-      fontSize: "14px",
-      color: "#f2dce9",
-      margin: "5px 0",
-    },
-    buttonContainer: {
-      display: "flex",
-      justifyContent: "space-between",
-      marginTop: "10px",
-    },
-    btn: {
-      backgroundColor: "rgb(209, 80, 176)", // Same color for edit & delete buttons
-      color: "#ffffff",
-      fontWeight: "bold",
-      border: "none",
-      padding: "10px 15px",
-      borderRadius: "5px",
-      cursor: "pointer",
-      width: "100px", // Increased button length
-    },
-    deleteBtn: {
-      backgroundColor: "rgb(209, 80, 176)",
-    },
-  };
-
-  if (loading) return <h2 style={styles.message}>Loading milestones...</h2>;
-  if (error) return <h2 style={styles.message}>{error}</h2>;
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   return (
-    
-    <div style={styles.container}>
-      <h2 style={styles.title}>Milestones of Projects {projectID}</h2>
-          <div className="flex gap-2">
-              <button
-                  onClick={() => navigate(`/add-milestone`)}
-                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded"
-              >
-                  Create Milestone
-              </button>
-          </div>
-      <div style={styles.listContainer}>
-        {milestones.length > 0 ? (
-          milestones.map((milestone) => (
-            <div key={milestone.milestoneID} style={styles.card}>
-              <h6 style={styles.cardTitle}>{milestone.featureDescription || "No Description"}</h6>
-              <p style={styles.paragraph}><strong>Start Date:</strong> {milestone.startDate ? new Date(milestone.startDate).toLocaleDateString() : "N/A"}</p>
-              <p style={styles.paragraph}><strong>Target Date:</strong> {milestone.targetDate ? new Date(milestone.targetDate).toLocaleDateString() : "N/A"}</p>
-              <p style={styles.paragraph}><strong>Status:</strong> {milestone.currentStatus || "N/A"}</p>
-              <p style={styles.paragraph}><strong>SoW ID:</strong> {milestone.soWID || "N/A"}</p>
-              <p style={styles.paragraph}><strong>Task ID:</strong> {milestone.taskID || "N/A"}</p>
-              <div style={styles.buttonContainer}>
-                <button style={styles.btn} onClick={() => handleEdit(milestone.milestoneID)}>Edit</button>
-                <button style={{ ...styles.btn, ...styles.deleteBtn }} onClick={() => handleDelete(milestone.milestoneID)}>Delete</button>
-              </div>
+    <div className="flex min-h-screen bg-gray-100">
+      {/* Sidebar */}
+      <div className="w-64 bg-gray-800 text-white p-6">
+        <h2 className="text-2xl font-bold mb-8">Welcome, {managerName}</h2>
+        <ul>
+          <li className="mb-4 hover:bg-gray-700 p-2 rounded cursor-pointer" onClick={() => navigate('/pmdashboard')}>
+            Dashboard
+          </li>
+          <li className="mb-4 hover:bg-gray-700 p-2 rounded cursor-pointer" onClick={() => navigate('/viewprojects')}>
+            Projects
+          </li>
+          <li className="mb-4 hover:bg-gray-700 p-2 rounded cursor-pointer" onClick={() => navigate(`/view-milestones`)}>
+            Milestone
+          </li>
+          <li className="mb-4 hover:bg-gray-700 p-2 rounded cursor-pointer">Reports</li>
+        </ul>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 p-6">
+        {/* Top Bar */}
+        <div className="flex items-center justify-between mb-6">
+          <img src="/bytestrone.png" alt="Company Logo" className="h-10" />
+          <div className="relative" ref={dropdownRef}>
+            <div
+              className="flex items-center space-x-4 cursor-pointer"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+              <span className="text-gray-800 font-medium">{managerName}</span>
+              <img src={avatar} alt="avatar" className="w-10 h-10 rounded-full" />
             </div>
-          ))
-        ) : (
-          <p style={styles.message}>No milestones available for the projects.</p>
-        )}
+            {dropdownOpen && (
+              <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg z-50">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                >
+                  <LogOut size={18} className="text-gray-600" />
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Milestone Section */}
+        <div className="bg-white p-6 rounded shadow">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold text-indigo-700">Milestones of Project {projectID}</h2>
+            <button
+              onClick={() => navigate('/add-milestone')}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+            >
+              + Create Milestone
+            </button>
+          </div>
+
+          {loading ? (
+            <p>Loading milestones...</p>
+          ) : milestones.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {milestones.map((milestone) => (
+                <div key={milestone.milestoneID} className="bg-purple-200 border rounded-lg p-4 shadow-md">
+                  <h6 className="text-lg font-semibold text-purple-900 mb-2">{milestone.featureDescription || "No Description"}</h6>
+                  <p><strong>Project:</strong> {milestone.project?.projectName || "N/A"}</p>
+                  <p><strong>Start Date:</strong> {milestone.startDate ? new Date(milestone.startDate).toLocaleDateString() : "N/A"}</p>
+                  <p><strong>Target Date:</strong> {milestone.targetDate ? new Date(milestone.targetDate).toLocaleDateString() : "N/A"}</p>
+                  <p><strong>Status:</strong> {milestone.currentStatus || "N/A"}</p>
+                  <p><strong>SoW ID:</strong> {milestone.soWID || "N/A"}</p>
+                  <p><strong>Task ID:</strong> {milestone.taskID || "N/A"}</p>
+                  <div className="flex justify-between mt-4">
+                    <button
+                      onClick={() => handleEdit(milestone.milestoneID)}
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded"
+                      
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(milestone.milestoneID)}
+                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-600">No milestones available for the project.</p>
+          )}
+        </div>
       </div>
     </div>
   );
-}
+};
 
+export default ViewMilestones;

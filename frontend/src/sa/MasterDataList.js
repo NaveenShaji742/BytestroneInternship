@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const MasterDataList = () => {
-  const [dataType, setDataType] = useState('phase'); // phase or contract
+  const [dataType, setDataType] = useState('phase'); // 'phase' or 'contract'
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,10 +25,11 @@ const MasterDataList = () => {
     }
   };
 
- const filteredData = data.filter((item) =>
-  (item.name || '').toLowerCase().includes(searchTerm.toLowerCase())
-);
-
+  const filteredData = data.filter((item) => {
+    const name =
+      dataType === 'phase' ? item.phaseName : item.name;
+    return (name || '').toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentData = filteredData.slice(
@@ -41,15 +42,18 @@ const MasterDataList = () => {
 
     const endpoint =
       dataType === 'phase'
-        ? `http://localhost:8080/api/phases`
-        : `http://localhost:8080/api/contracts`;
+        ? `http://localhost:8080/api/phases/${id}`
+        : `http://localhost:8080/api/contracts/${id}`;
 
     axios
       .delete(endpoint)
       .then(() => {
         fetchData();
       })
-      .catch(() => alert('Cannot delete item due to dependencies.'));
+      .catch((error) => {
+        console.error("Delete error:", error);
+        alert('Cannot delete item due to dependencies or server error.');
+      });
   };
 
   return (
@@ -67,16 +71,15 @@ const MasterDataList = () => {
         >
           Phases
         </button>
-              <button
-                  onClick={() => {
-                      setDataType('contract');
-                      setCurrentPage(1);
-                  }}
-                  className={`px-4 py-2 rounded ${dataType === 'contract' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-              >
-                  Contract Types
-              </button>
-
+        <button
+          onClick={() => {
+            setDataType('contract');
+            setCurrentPage(1);
+          }}
+          className={`px-4 py-2 rounded ${dataType === 'contract' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+        >
+          Contract Types
+        </button>
       </div>
 
       {/* Search */}
@@ -107,14 +110,13 @@ const MasterDataList = () => {
         <tbody>
           {currentData.map((item) => (
             <tr key={item.id} className="hover:bg-gray-50">
-              <td className="py-2 px-4 border-b">{item.phaseName}</td>
+              <td className="py-2 px-4 border-b">
+                {dataType === 'phase' ? item.phaseName : item.name}
+              </td>
               <td className="py-2 px-4 border-b">{item.description || '-'}</td>
               <td className="py-2 px-4 border-b">{item.status || 'Active'}</td>
               <td className="py-2 px-4 border-b">{item.associatedCount || 0}</td>
               <td className="py-2 px-4 border-b text-center">
-                <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2">
-                  Edit
-                </button>
                 <button
                   onClick={() => handleDelete(item.id)}
                   className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"

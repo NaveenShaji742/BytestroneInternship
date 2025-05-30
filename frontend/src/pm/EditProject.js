@@ -44,7 +44,7 @@ export default function EditProject() {
 
     const fetchContractTypes = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/contract-types");
+        const response = await axios.get("http://localhost:8080/api/contracts");
         setContractTypes(response.data);
       } catch (error) {
         console.error("Error fetching contract types", error);

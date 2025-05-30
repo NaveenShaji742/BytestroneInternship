@@ -9,7 +9,7 @@ import ViewProjects from "./pm/ViewProjects";
 import EditProject from "./pm/EditProject";
 import ViewMilestones from "./pm/ViewMilestone";
 import AddMilestones from "./pm/AddMilestone";
-
+import EditMilestone from "./pm/EditMIlestone";
 // System Admin modules
 import SADashboard from "./sa/SADashboard";
 import PhaseManagement from "./sa/PhaseManagement";
@@ -37,6 +37,8 @@ function App() {
         <Route path="/editproject/:id" element={<EditProject />} />
         <Route path="/view-milestones" element={<ViewMilestones />} />
         <Route path="/add-milestone" element={<AddMilestones />} />
+        <Route path="/edit-milestone/:milestoneID" element={<EditMilestone />} />
+
 
         {/* System Administrator Routes */}
         <Route path="/sadashboard" element={isLoggedIn ? <SADashboard /> : <Navigate to="/" />} />
